@@ -58,6 +58,12 @@ dotnet add "$INFRA_DIR/$INFRA_DIR.csproj" reference "$CORE_DIR/$CORE_DIR.csproj"
 dotnet add "$WEB_DIR/$WEB_DIR.csproj" reference "$CORE_DIR/$CORE_DIR.csproj"
 dotnet add "$WEB_DIR/$WEB_DIR.csproj" reference "$INFRA_DIR/$INFRA_DIR.csproj"
 
+# Download the .gitignore for Visual Studio/ .NET projects
+echo "Downloading .gitignore for Visual Studio/ .NET projects..."
+curl -o .gitignore https://raw.githubusercontent.com/github/gitignore/main/VisualStudio.gitignore
+
+echo ".gitignore file created."
+
 # Build the solution
 echo "Building the solution..."
 dotnet build "${PREFIX}.sln"
