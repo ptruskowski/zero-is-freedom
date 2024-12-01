@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "genapi": "bash ./generators/generate-api.sh",
+    "genapi": "bash ./generators/generate-api.sh -c ./generators/gen-config.json",
     "runapi": "cd zf-api/ZeroIsFreedom.Web && dotnet run"
   },
   "author": "",
