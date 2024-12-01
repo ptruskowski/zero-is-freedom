@@ -18,6 +18,18 @@ get_config_value() {
     fi
 }
 
+# Function to set the root namespace in csproj file
+set_root_namespace() {
+    local project_file=$1
+    local namespace=$2
+    # Add RootNamespace element if not present, or modify it
+    if grep -q "<RootNamespace>" "$project_file"; then
+        sed -i "s|<RootNamespace>.*</RootNamespace>|<RootNamespace>$namespace</RootNamespace>|" "$project_file"
+    else
+        sed -i "/<Nullable>/a \ \ \ \ <RootNamespace>$namespace</RootNamespace>" "$project_file"
+    fi
+}
+
 # Check if a config file is provided
 while getopts "c:" opt; do
   case $opt in
@@ -53,6 +65,8 @@ if [[ -z "$DEST_DIR" ]]; then
     fi
 fi
 
+rm -rf "$DEST_DIR"
+
 # Ensure the destination directory exists
 mkdir -p "$DEST_DIR"
 
@@ -68,18 +82,21 @@ CORE_DIR="${PREFIX}.Core"
 echo "Creating Core project in $DEST_DIR/$CORE_DIR..."
 mkdir "$CORE_DIR"
 dotnet new classlib -n "$CORE_DIR" -o "$CORE_DIR"
+set_root_namespace "$CORE_DIR/$CORE_DIR.csproj" "$PREFIX"
 
 # Create the Infra project
 INFRA_DIR="${PREFIX}.Infra"
 echo "Creating Infra project in $DEST_DIR/$INFRA_DIR..."
 mkdir "$INFRA_DIR"
 dotnet new classlib -n "$INFRA_DIR" -o "$INFRA_DIR"
+set_root_namespace "$INFRA_DIR/$INFRA_DIR.csproj" "$PREFIX"
 
 # Create the Web project
 WEB_DIR="${PREFIX}.Web"
 echo "Creating Web API project in $DEST_DIR/$WEB_DIR..."
 mkdir "$WEB_DIR"
 dotnet new webapi -n "$WEB_DIR" -o "$WEB_DIR"
+set_root_namespace "$WEB_DIR/$WEB_DIR.csproj" "$PREFIX"
 
 # Add projects to the solution
 echo "Adding projects to solution..."
